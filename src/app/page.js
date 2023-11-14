@@ -11,9 +11,8 @@ const App = () => {
   const [medicationName, setMedicationName] = useState('');
   const [medicationTime, setMedicationTime] = useState('');
   const [medicationQuantity, setMedicationQuantity] = useState('');
+  const [selectedPatientIndex, setSelectedPatientIndex] = useState(0);
 
-
-  
   // Carregar dados do localStorage ao iniciar
   useEffect(() => {
     const savedPatients = JSON.parse(localStorage.getItem('patients')) || [];
@@ -30,7 +29,6 @@ const App = () => {
   }, [patients, medications]);
 
   const addPatient = () => {
-    // Verificar se todos os campos estão preenchidos antes de cadastrar
     if (patientName && patientAge) {
       const newPatient = { name: patientName, age: patientAge };
       setPatients([...patients, newPatient]);
@@ -40,11 +38,10 @@ const App = () => {
       alert('Por favor, preencha todos os campos antes de cadastrar o paciente.');
     }
   };
-  
+
   const addMedication = () => {
-    // Verificar se todos os campos estão preenchidos antes de cadastrar
     if (medicationName && medicationTime && medicationQuantity) {
-      const selectedPatient = patients.length > 0 ? patients[0] : {};
+      const selectedPatient = patients[selectedPatientIndex] || {};
       const newMedication = {
         patientName: selectedPatient.name,
         patientAge: selectedPatient.age,
@@ -59,26 +56,23 @@ const App = () => {
     } else {
       alert('Por favor, preencha todos os campos antes de cadastrar a medicação.');
     }
-    };
+  };
 
-    const removePatient = (index) => {
-      const updatedPatients = [...patients];
-      updatedPatients.splice(index, 1);
-      setPatients(updatedPatients);
-    };
-  
-    const removeMedication = (index) => {
-      const updatedMedications = [...medications];
-      updatedMedications.splice(index, 1);
-      setMedications(updatedMedications);
-    };
-  
+  const removePatient = (index) => {
+    const updatedPatients = [...patients];
+    updatedPatients.splice(index, 1);
+    setPatients(updatedPatients);
+  };
 
-    
+  const removeMedication = (index) => {
+    const updatedMedications = [...medications];
+    updatedMedications.splice(index, 1);
+    setMedications(updatedMedications);
+  };
+
   return (
-    
     <div className="container mx-auto p-8 bg-gray-200">
-      <h1 className="text-4xl font-bold text-indigo-600 mb-6">      Sistema de Cuidados Médicos</h1>
+      <h1 className="text-4xl font-bold text-indigo-600 mb-6">Sistema de Cuidados Médicos</h1>
       <Navbar></Navbar>
       <form className="mb-6">
         <div className="mb-4">
@@ -130,9 +124,11 @@ const App = () => {
           <select
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
             id="patientSelect"
+            onChange={(e) => setSelectedPatientIndex(e.target.selectedIndex)}
+            value={selectedPatientIndex}
           >
             {patients.map((patient, index) => (
-              <option key={index} value={patient.name}>
+              <option key={index} value={index}>
                 {patient.name}
               </option>
             ))}
@@ -189,16 +185,16 @@ const App = () => {
 
       <hr className="my-8" />
 
-<h1 className="text-3xl font-bold text-indigo-600 mb-6">Acompanhamento</h1>
+      <h1 className="text-3xl font-bold text-indigo-600 mb-6">Acompanhamento</h1>
 
-<div>
+      <div>
         <h2 className="text-2xl font-bold mb-4">Pacientes</h2>
         <table className="table">
           <thead>
             <tr>
               <th>Nome</th>
               <th>Idade</th>
-              <th>Ação</th> {/* Novo cabeçalho para o botão de exclusão */}
+              <th>Ação</th>
             </tr>
           </thead>
           <tbody>
@@ -230,7 +226,7 @@ const App = () => {
               <th>Nome do Medicamento</th>
               <th>Horário</th>
               <th>Quantidade</th>
-              <th>Ação</th> {/* Novo cabeçalho para o botão de exclusão */}
+              <th>Ação</th>
             </tr>
           </thead>
           <tbody>
